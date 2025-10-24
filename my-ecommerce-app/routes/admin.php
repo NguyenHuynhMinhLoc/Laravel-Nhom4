@@ -43,7 +43,7 @@ Route::get('/logout', [AdminController::class, 'logout'])->name('admin.logout');
 // });
 
 //Định nghĩa router post
-Route::post('/category/add', [AdminController::class, 'ThemDanhMuc']);
-Route::post('/category/load', [AdminController::class, 'Load_DM']);
-Route::post('/product/add', [AdminController::class, 'ThemSanPham']);
+Route::post('/category/add', [AdminController::class, 'CategoryADD']);
+Route::post('/category/load', [AdminController::class, 'CategoryLoad']);
+Route::post('/product/add', [AdminController::class, 'ProductADD']);
 Route::post('/product/remove', [AdminController::class, 'XoaSanPham']);

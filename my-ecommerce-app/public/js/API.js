@@ -1,7 +1,7 @@
 
  //xây dựng hàm lấy dữ liệu đường dẫn 
- function DiaChi(DiaChi){
-    switch(DiaChi){
+ function GetUrl(Url){
+    switch(Url){
         case 1:
             return '/category/add';
         case 2:
@@ -13,25 +13,25 @@
     }
  }
  
-export async function CallAPI(dulieu = null, yeucau){
-    const DuongDan = DiaChi(yeucau.DiaChi);
-    let options = {
+export async function CallAPI(Data = null, request){
+    const Url = GetUrl(request.url);
+    let information = {
         method: "POST",
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         credentials: "include"
     };
-    if(dulieu instanceof FormData){
-        options.body = dulieu;
+    if(Data instanceof FormData){
+       information.body = Data;
     } else {
-        options.headers['Content-Type'] = 'application/json';
-        options.body = JSON.stringify(dulieu || {});
+        information.headers['Content-Type'] = 'application/json';
+        information.body = JSON.stringify(Data || {});
     }
     try {
-        const response = await fetch(DuongDan, options);
-        const ketqua = await response.json();
-        return ketqua;
+        const response = await fetch(Url,information);
+        const result = await response.json();
+        return result;
     } catch(error) {
         return {
             status: false,

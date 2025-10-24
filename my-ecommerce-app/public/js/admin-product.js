@@ -20,24 +20,23 @@ async function HienThiDanhMuc(){
 });
 }
 HienThiDanhMuc();
-window.ThemDanhMuc = async function() {
+
+window.categoryADD = async function() {
     const categoryName = document.querySelector('#new_category_name').value.trim();
     if (!categoryName) {
         alert("Vui lòng nhập tên danh mục");
         return;
     }
-    const DuLieu = { dulieu: categoryName };
-    const yeucau = { 
-        DiaChi: 1,
-    
-
+    const DATA = { DaTa: categoryName };
+    const request = { 
+        url: 1,
      };
-    const ketqua = await API.CallAPI(DuLieu, yeucau);
-    if(ketqua.status){
+    const result = await API.CallAPI(DATA, request);
+    if(result.status){
         HienThiDanhMuc();
-        alert(ketqua.message)
+        alert(result.message)
     }else{
-         alert(ketqua.message)
+        alert(result.message)
     }
 };
 //xử lí ảnh trong trang hiện tại
@@ -62,48 +61,49 @@ removeBtn.addEventListener('click', function(){
     removeBtn.style.display = 'none'; 
 });
 
-window.ThemSanPham = async function() {
-    const TenSP = document.getElementById('product_name').value.trim();
-    const GiaSP = document.getElementById('list_price').value.trim();
-    const HinhAnh = document.getElementById('product_image').files[0];
-    const DanhMuc = document.getElementById('category_id_select').value;
-    const SoLuong = document.getElementById('quantity').value;
-    const Gia_KM = document.getElementById('sale_price').value;
-    if(TenSP=="" || GiaSP<=0 || DanhMuc=="" || SoLuong<=0){
+window.ProductADD = async function() {
+    const ProductName = document.getElementById('product_name').value.trim();
+    const ProductPrice = document.getElementById('list_price').value.trim();
+    const Image = document.getElementById('product_image').files[0];
+    const Category = document.getElementById('category_id_select').value;
+    const Quantity = document.getElementById('quantity').value;
+    const promotion = document.getElementById('sale_price').value;
+    if(ProductName=="" || ProductPrice<=0 || Category=="" || Quantity<=0){
         alert("Vui lòng nhập dữ liệu");
         return;
     }
     const formData = new FormData();
-    formData.append('ten', TenSP);
-    formData.append('gia', GiaSP);
-    formData.append('dm', DanhMuc);
-    formData.append('sl', SoLuong);
-    formData.append('km', Gia_KM || 0);
-    if(HinhAnh){
-        formData.append('hinh', HinhAnh); 
+    formData.append('name', ProductName);
+    formData.append('price', ProductPrice);
+    formData.append('category', Category);
+    formData.append('quantity', SoLuong);
+    formData.append('promotion', promotion || 0);
+    if(Image){
+        formData.append('imge', Image); 
     }
-    const yeucau = { 
-        DiaChi: 3,
+    const request = { 
+        url: 3,
      };
-    const ketqua = await API.CallAPI(formData, yeucau);
-    if(ketqua.status){
-        alert(ketqua.message);
+    const result = await API.CallAPI(formData, request);
+    if(result.status){
+        alert(result.message);
     } else {
-        alert(ketqua.message);
+        alert(result.message);
     }
 }
-window.xoa=async function(id) {
+
+window.ProductDELETE=async function(id) {
     if(window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')){
         const formData = new FormData();
         formData.append('id', id);
-        const yeucau = { 
-            DiaChi: 4,
+        const request = { 
+            url: 4,
          };
-        const ketqua=await API.CallAPI(formData,yeucau);
-        if(ketqua.status){
-            alert(ketqua.message);
+        const result=await API.CallAPI(formData,request);
+        if(result.status){
+            alert(result.message);
         }else{
-            alert(ketqua.message);
+            alert(result.message);
         }
     }
 }

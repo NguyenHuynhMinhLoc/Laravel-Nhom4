@@ -17,23 +17,29 @@ class Product extends Model
         'ProductStatus',
         'CategoryID'
     ];
-    public static function ThemSanPham($dulieu,$hinhanh){
-        $tenFile = null; 
-        if($hinhanh){
-            $tenFile = time().'_'.$hinhanh->getClientOriginalName();
-            $hinhanh->move(public_path('uploads'), $tenFile);
+    public static function ProductADD($DaTa,$image){
+        $FileName = null; 
+        if($image){
+            $FileName = time().'_'.$image->getClientOriginalName();
+            $image->move(public_path('uploads'), $FileName);
         }
-        $ketqua = DB::table('product')->insert([
-            'Image' => $tenFile,
-            'ProductName' => $dulieuObj['ten'] ?? '',
-            'ProductPrice' => $dulieuObj['gia'] ?? 0,
-            'PriceCoupon' => $dulieuObj['km'] ?? 0,
-            'ProductQuantity' => $dulieuObj['sl'] ?? 0,
+        $result = DB::table('product')->insert([
+            'Image' => $FileName,
+            'ProductName' => $DaTa['ten'] ?? '',
+            'ProductPrice' => $DaTa['gia'] ?? 0,
+            'PriceCoupon' => $DaTa['km'] ?? 0,
+            'ProductQuantity' => $DaTa['sl'] ?? 0,
             'ProductStatus' => 1, 
-            'CategoryID' => $dulieuObj['dm'] ?? null
+            'CategoryID' => $DaTa['dm'] ?? null
         ]);
-        return $ketqua;
+        return $result;
     }
+    public static function GetProducts(){
+        $ProductList = Product::where('ProductStatus', 1)->paginate(8);
+        return $ProductList;
+    }
+    
+
     public static function XoaSanPham($dulieu){
        $ketqua= DB::table('product')
                   ->where('ProductID', $dulieu['id'])
@@ -48,8 +54,5 @@ class Product extends Model
                  ->first();
         return $ketqua;
     }
-    public static function LaySP(){
-        $sanpham = Product::where('ProductStatus', 1)->paginate(8);
-        return $sanpham;
-    }
+    
 }

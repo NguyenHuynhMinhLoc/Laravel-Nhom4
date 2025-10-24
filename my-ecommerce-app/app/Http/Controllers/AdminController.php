@@ -9,10 +9,10 @@ use Illuminate\Http\Request;
 class AdminController extends Controller
 {
     //Hàm để thêm danh mục mới
-    public function ThemDanhMuc(Request $request){
-        $dulieuObj = $request->all();
-        $ketqua=category::ThemDuLieu($dulieuObj);
-         if ($ketqua) {
+    public function CategoryADD(Request $request){
+        $ObjData = $request->all();
+        $result=category::CategoryADD($ObjData);
+         if ($result) {
             return response()->json([
                 'status' => true,
                 'message' => 'Thêm danh mục thành công!'
@@ -25,15 +25,15 @@ class AdminController extends Controller
         } 
     }
      //Hàm để load danh mục
-    public function Load_DM(){
-        return category::LoadDM();
+    public function CategoryLoad(){
+        return category::GetCategories();
     }
     // Thêm sản phẩm vào database
-     public function ThemSanPham(Request $request){
-        $dulieuObj = $request->all();        
-        $hinhAnh = $request->file('hinh');
-        $ketqua = product::ThemSanPham($dulieuObj,$hinhAnh);
-         if($ketqua){
+     public function ProductADD(Request $request){
+        $ObjData = $request->all();        
+        $Image = $request->file('hinh');
+        $result = product::ProductsADD($ObjData,$Image);
+         if($result){
             return response()->json([
                 'status'=>true,
                 'message'=>"Thêm sản phẩm thành công!"
@@ -81,8 +81,8 @@ class AdminController extends Controller
     }
     public function forms(){
         return view("admin.forms", [
-            "DanhMuc" => category::LoadDM(),
-            "SanPham" => product::LaySP()
+            "Categories" => category::GetCategories(),
+            "Products" => product::GetProducts()
         ]);
     }
     

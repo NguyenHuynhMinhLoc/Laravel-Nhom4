@@ -34,7 +34,7 @@
                             <div class="input-group">
                                 <input type="text" id="new_category_name" class="form-control" placeholder="Nhập tên danh mục mới">
                                 <span class="input-group-btn">
-                                    <button type="button" id="save-new-category" class="btn btn-success" onclick="ThemDanhMuc();">
+                                    <button type="button" id="save-new-category" class="btn btn-success" onclick="categoryADD();">
                                         <i class="fa fa-check fa-fw"></i> Lưu
                                     </button>
                                     <button type="button" @click="showQuickAdd = false" id="cancel-new-category" class="btn btn-danger">
@@ -69,7 +69,7 @@
                         </div>
                     </div>
                     <hr style="border-top: 1px solid #ccc;">
-                    <button type="button" onclick="ThemSanPham();" class="btn btn-success btn-lg" style="min-width: 150px; border-radius: 4px;">
+                    <button type="button" onclick="ProductADD();" class="btn btn-success btn-lg" style="min-width: 150px; border-radius: 4px;">
                         <i class="fa fa-save fa-fw"></i> Lưu
                     </button>
                     <button type="reset" class="btn btn-warning btn-lg pull-right" style="min-width: 150px; border-radius: 4px;">
@@ -97,7 +97,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($SanPham as $p)   
+                            @foreach ($Products as $p)   
                             <tr>
                                 <td>{{$p['ProductID']}}</td>
                                 <td>{{$p['ProductName']}}</td>
@@ -111,7 +111,7 @@
                                         <i class="fa fa-edit"></i> Sửa
                                     </a> 
 
-                                    <button type="button" onclick="xoa({{ $p['ProductID'] }});" class="btn btn-danger">
+                                    <button type="button" onclick="ProductDELETE({{ $p['ProductID'] }});" class="btn btn-danger">
                                          Xóa
                                     </button>
 

@@ -12,17 +12,17 @@ class Category extends Model
         'CategoryName',
         'Status'
     ];
-    public static function ThemDuLieu($bien){
-         $ketqua = DB::table('category')->insert([
-            'CategoryName' => $bien['dulieu'],
+    public static function CategoryADD($DATA){
+         $result = DB::table('category')->insert([
+            'CategoryName' => $DATA['DaTa'],
             'Status'=>1
         ]);
-        return $ketqua;
+        return $result;
     }
-    public static function LoadDM(){
-       $dulieu=category::select('CategoryID', 'CategoryName')
+    public static function GetCategories(){
+       $result=category::select('CategoryID', 'CategoryName')
                    ->where('Status', 1)
                    ->get();
-       return $dulieu;
+       return $result;
     }
 }
