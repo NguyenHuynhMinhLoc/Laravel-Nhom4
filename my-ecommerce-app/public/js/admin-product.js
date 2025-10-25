@@ -3,23 +3,23 @@ const form = document.querySelector('form[role="form"]');
 form.addEventListener('submit', function(e){
     e.preventDefault();
 });
-async function LoadDM(){
-    const yeucau={
-        DiaChi:2,
+async function GetCategory(){
+    const request={
+        url:2,
     };
-    const ketqua= await API.CallAPI(undefined,yeucau);
-    return ketqua;
+    const result= await API.CallAPI(undefined,request);
+    return result;
 }
-async function HienThiDanhMuc(){
+async function CategoryDisplay(){
     const select = document.getElementById('category_id_select');
-    const DuLieuAPI_danhmuc = await LoadDM();
+    const ObjAPI = await GetCategory();
     select.innerHTML = '';
-    Object.values(DuLieuAPI_danhmuc).forEach((dm,index) => {
-       const selected = (index === DuLieuAPI_danhmuc.length - 1) ? 'selected' : '';
+    Object.values(ObjAPI).forEach((dm,index) => {
+       const selected = (index ===ObjAPI.length - 1) ? 'selected' : '';
        select.innerHTML += `<option value="${dm.CategoryID}" ${selected}>${dm.CategoryName}</option>`;
 });
 }
-HienThiDanhMuc();
+CategoryDisplay();
 
 window.categoryADD = async function() {
     const categoryName = document.querySelector('#new_category_name').value.trim();
@@ -33,7 +33,7 @@ window.categoryADD = async function() {
      };
     const result = await API.CallAPI(DATA, request);
     if(result.status){
-        HienThiDanhMuc();
+        CategoryDisplay();
         alert(result.message)
     }else{
         alert(result.message)
@@ -68,29 +68,34 @@ window.ProductADD = async function() {
     const Category = document.getElementById('category_id_select').value;
     const Quantity = document.getElementById('quantity').value;
     const promotion = document.getElementById('sale_price').value;
-    if(ProductName=="" || ProductPrice<=0 || Category=="" || Quantity<=0){
-        alert("Vui lòng nhập dữ liệu");
-        return;
-    }
     const formData = new FormData();
-    formData.append('name', ProductName);
-    formData.append('price', ProductPrice);
-    formData.append('category', Category);
-    formData.append('quantity', SoLuong);
-    formData.append('promotion', promotion || 0);
-    if(Image){
-        formData.append('imge', Image); 
-    }
-    const request = { 
-        url: 3,
-     };
-    const result = await API.CallAPI(formData, request);
+formData.append('ProductName', ProductName);
+formData.append('ProductPrice', ProductPrice);
+formData.append('PriceCoubon', promotion || 0);
+formData.append('ProductStatus', 1); // mặc định hiển thị
+formData.append('CategoryID', Category);
+if (Image) formData.append('Image', Image); 
+    const request={
+        url:3
+    };
+    const result = await API.CallAPI(formData,request);
     if(result.status){
-        alert(result.message);
-    } else {
-        alert(result.message);
-    }
+        alert("Thêm sản phẩm thành công!")
+    }else{
+       const validation_errors = document.getElementById('validation-errors');
+       validation_errors.style.display = 'block';
+       validation_errors.innerHTML='';
+       let errorHtml = '<strong>Vui lòng kiểm tra lại thông tin:</strong><ul style="margin: 0; padding-left: 20px;">';
+       const errorMessagesArrays = Object.values(result.errors);
+        errorMessagesArrays.forEach(value => {
+           errorHtml += `<li>${value}</li>`;
+        });
+        errorHtml+="</ul>";
+         validation_errors.innerHTML=errorHtml;
 }
+}
+
+
 
 window.ProductDELETE=async function(id) {
     if(window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')){

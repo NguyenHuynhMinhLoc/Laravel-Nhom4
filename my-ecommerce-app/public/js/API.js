@@ -18,7 +18,8 @@ export async function CallAPI(Data = null, request){
     let information = {
         method: "POST",
         headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+             'Accept': 'application/json' 
         },
         credentials: "include"
     };
@@ -29,9 +30,20 @@ export async function CallAPI(Data = null, request){
         information.body = JSON.stringify(Data || {});
     }
     try {
-        const response = await fetch(Url,information);
+        const response = await fetch(Url, information);
         const result = await response.json();
+
+        if(!response.ok){
+            // Lỗi từ server (ví dụ validate 422)
+            return {
+                status: false,
+                errors: result.errors || {},
+            }
+        }
+
+        // Thành công
         return result;
+
     } catch(error) {
         return {
             status: false,

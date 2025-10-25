@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 use App\Models\category;
 use App\Models\product;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Http\Requests\ValidateProducts;
 
 class AdminController extends Controller
 {
@@ -29,9 +29,9 @@ class AdminController extends Controller
         return category::GetCategories();
     }
     // Thêm sản phẩm vào database
-     public function ProductADD(Request $request){
-        $ObjData = $request->all();        
-        $Image = $request->file('hinh');
+     public function ProductADD(ValidateProducts $request){
+        $ObjData = $request->validated();        
+        $Image = $request->file('Image');
         $result = product::ProductsADD($ObjData,$Image);
          if($result){
             return response()->json([
