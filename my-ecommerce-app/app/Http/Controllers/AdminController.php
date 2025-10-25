@@ -5,12 +5,12 @@ use App\Models\category;
 use App\Models\product;
 use Illuminate\Http\Request;
 use App\Http\Requests\ValidateProducts;
-
+use App\Http\Requests\ValidateCatories;
 class AdminController extends Controller
 {
     //Hàm để thêm danh mục mới
-    public function CategoryADD(Request $request){
-        $ObjData = $request->all();
+    public function CategoryADD(ValidateCatories $request){
+        $ObjData = $request->validated();
         $result=category::CategoryADD($ObjData);
          if ($result) {
             return response()->json([
@@ -32,7 +32,7 @@ class AdminController extends Controller
      public function ProductADD(ValidateProducts $request){
         $ObjData = $request->validated();        
         $Image = $request->file('Image');
-        $result = product::ProductsADD($ObjData,$Image);
+        $result = product::ProductADD($ObjData,$Image);
          if($result){
             return response()->json([
                 'status'=>true,
@@ -41,7 +41,8 @@ class AdminController extends Controller
         } else {
             return response()->json([
                 'status'=>false,
-                'message'=>"Thêm sản phẩm thất bại"
+                'message'=>"Thêm sản phẩm thất bại",
+                'from'=>2
             ]);
         }
     }
@@ -102,7 +103,7 @@ class AdminController extends Controller
     public function login(Request $request){
         $data = $request->only("email","password");
 
-        if($data["email"] === 'adminN4@gmail.com' && $data['password'] === 'pas123')
+        if($data["email"] === 'adminN4@gmail.com' && $data['password'] === 'pas132')
         {
             $request->session()->put('admin_log_in', true);
             session(['email'=> $data['email'],'password'=> $data['password']]);
@@ -139,7 +140,6 @@ class AdminController extends Controller
     {
         // cái này sẽ xóa hết session
         $request->session()->flush();
-
         return redirect()->route('admin.login');
     }
 

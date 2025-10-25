@@ -14,7 +14,7 @@ class Category extends Model
     ];
     public static function CategoryADD($DATA){
          $result = DB::table('category')->insert([
-            'CategoryName' => $DATA['DaTa'],
+            'CategoryName' => $DATA['CategoryName'],
             'Status'=>1
         ]);
         return $result;

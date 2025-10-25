@@ -27,7 +27,7 @@ window.categoryADD = async function() {
         alert("Vui lòng nhập tên danh mục");
         return;
     }
-    const DATA = { DaTa: categoryName };
+    const DATA = { CategoryName: categoryName };
     const request = { 
         url: 1,
      };
@@ -36,9 +36,23 @@ window.categoryADD = async function() {
         CategoryDisplay();
         alert(result.message)
     }else{
-        alert(result.message)
+        if(result.from==="DATABASE"){
+            alert(result.message)
+        }else{
+             const validation_errors = document.getElementById('validation-errors');
+             validation_errors.style.display = 'block';
+             validation_errors.innerHTML='';
+             let errorHtml = '<strong>Vui lòng kiểm tra lại thông tin:</strong><ul style="margin: 0; padding-left: 20px;">';
+             const errorMessagesArrays = Object.values(result.errors);
+             errorMessagesArrays.forEach(value => {
+                errorHtml += `<li>${value}</li>`;
+            });
+            errorHtml+="</ul>";
+            validation_errors.innerHTML=errorHtml;
+        }    
     }
 };
+
 //xử lí ảnh trong trang hiện tại
 const input = document.getElementById('product_image');
 const preview = document.getElementById('preview_image');
@@ -60,43 +74,59 @@ removeBtn.addEventListener('click', function(){
     preview.style.display = 'none';
     removeBtn.style.display = 'none'; 
 });
-
 window.ProductADD = async function() {
+    // 1 : lấy dữ liệu từ form
     const ProductName = document.getElementById('product_name').value.trim();
     const ProductPrice = document.getElementById('list_price').value.trim();
     const Image = document.getElementById('product_image').files[0];
     const Category = document.getElementById('category_id_select').value;
     const Quantity = document.getElementById('quantity').value;
     const promotion = document.getElementById('sale_price').value;
+    // 2 : kiểm tra rỗng các trường
+    if(ProductName===""||ProductPrice===""||!Image||Category===""||Quantity===""){
+        alert("Vui lòng nhập đầy đủ thông tin!");
+        return;
+    }
+    // 3 : khởi tạo formdata và thêm dữ liệu vào
     const formData = new FormData();
-formData.append('ProductName', ProductName);
-formData.append('ProductPrice', ProductPrice);
-formData.append('PriceCoubon', promotion || 0);
-formData.append('ProductStatus', 1); // mặc định hiển thị
-formData.append('CategoryID', Category);
-if (Image) formData.append('Image', Image); 
+    formData.append('ProductName', ProductName);
+    formData.append('ProductPrice', ProductPrice);
+    formData.append('PriceCoubon', promotion || 0);
+    formData.append('ProductStatus', 1); 
+    formData.append('Quantity',Quantity);
+    formData.append('CategoryID', Category);
+    if (Image) formData.append('Image', Image);
+    // 4 : Chuẩn bị dữ liệu, gọi API và trả kết quả 
     const request={
-        url:3
+         url:3
     };
     const result = await API.CallAPI(formData,request);
     if(result.status){
-        alert("Thêm sản phẩm thành công!")
+        // 5 : Thêm sản phẩm thành công với 1 obj {status,message}
+        alert(result.message);
     }else{
-       const validation_errors = document.getElementById('validation-errors');
-       validation_errors.style.display = 'block';
-       validation_errors.innerHTML='';
-       let errorHtml = '<strong>Vui lòng kiểm tra lại thông tin:</strong><ul style="margin: 0; padding-left: 20px;">';
-       const errorMessagesArrays = Object.values(result.errors);
-        errorMessagesArrays.forEach(value => {
-           errorHtml += `<li>${value}</li>`;
-        });
-        errorHtml+="</ul>";
-         validation_errors.innerHTML=errorHtml;
+        // 6 : trả về các lỗi 
+        if(result.from==="DATABASE"){
+            // 6.1 : lỗi từ phía server
+            alert(result.message)
+        }else{
+            // 6.2 : lỗi từ validation 
+             const validation_errors = document.getElementById('validation-errors');
+             validation_errors.style.display = 'block';
+             validation_errors.innerHTML='';
+             let errorHtml = '<strong>Vui lòng kiểm tra lại thông tin:</strong><ul style="margin: 0; padding-left: 20px;">';
+             const errorMessagesArrays = Object.values(result.errors);
+             errorMessagesArrays.forEach(value => {
+                errorHtml += `<li>${value}</li>`;
+            });
+            errorHtml+="</ul>";
+            validation_errors.innerHTML=errorHtml;
+        } 
+    }
 }
-}
 
 
-
+/*
 window.ProductDELETE=async function(id) {
     if(window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')){
         const formData = new FormData();
@@ -111,4 +141,4 @@ window.ProductDELETE=async function(id) {
             alert(result.message);
         }
     }
-}
+}*/

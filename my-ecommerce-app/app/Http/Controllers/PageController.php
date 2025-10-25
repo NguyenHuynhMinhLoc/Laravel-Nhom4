@@ -23,8 +23,8 @@ class PageController extends Controller
     }
 
     public function index(){
-        //Lấy dữ liệu sản phẩm, ở mỗi trang sẽ hiện 8 sản phẩm
-        return view('user.index', ['product' => product::GetProducts()]);
+        $coupon=Product::GetProductsCoupon();
+        return view('user.index', ['product' => product::getNewestProducts(), 'coupon'=>Product::GetProductsCoupon()]);
     }
 
     public function productdetail(){

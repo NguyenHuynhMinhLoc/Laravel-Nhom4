@@ -15,7 +15,8 @@ class Product extends Model
         'ProductPrice',
         'PriceCoubon',
         'ProductStatus',
-        'CategoryID'
+        'CategoryID',
+        'ImportDate'
     ];
     public static function ProductADD($DaTa,$image){
         $FileName = null; 
@@ -25,12 +26,13 @@ class Product extends Model
         }
         $result = DB::table('product')->insert([
             'Image' => $FileName,
-            'ProductName' => $DaTa['ten'] ?? '',
-            'ProductPrice' => $DaTa['gia'] ?? 0,
-            'PriceCoupon' => $DaTa['km'] ?? 0,
-            'ProductQuantity' => $DaTa['sl'] ?? 0,
-            'ProductStatus' => 1, 
-            'CategoryID' => $DaTa['dm'] ?? null
+            'ProductName' => $DaTa['ProductName'] ?? '',
+            'ProductPrice' => $DaTa['ProductPrice'] ?? 0,
+            'PriceCoupon' => $DaTa['PriceCoubon'] ?? 0,
+            'ProductQuantity' => $DaTa['Quantity'] ?? 0,
+            'ProductStatus' => $DaTa['ProductStatus'], 
+            'CategoryID' => $DaTa['CategoryID'] ?? null,
+            'ImportDate'=>today()
         ]);
         return $result;
     }
@@ -38,8 +40,21 @@ class Product extends Model
         $ProductList = Product::where('ProductStatus', 1)->paginate(8);
         return $ProductList;
     }
-    
-
+    public static function GetProductsCoupon(){
+        $Coupon = DB::table('product')
+                    ->where('PriceCoupon', '!=', 0)
+                    ->get();
+        return $Coupon;
+    }
+    public static function getNewestProducts() {
+        $startDate = now()->subDays(2);
+        $products = DB::table('product')
+                    ->whereDate('ImportDate', '>=', $startDate)
+                    ->orderBy('ImportDate', 'desc')
+                    ->get();
+        return $products;
+    }
+    //bên dưới chưa sữa
     public static function XoaSanPham($dulieu){
        $ketqua= DB::table('product')
                   ->where('ProductID', $dulieu['id'])
