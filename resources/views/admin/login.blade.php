@@ -50,6 +50,7 @@
                                 </ul>
                             </div>
                         @endif
+                        
                         <form role="form" method="post" action="{{route('admin.login')}}">
                             @csrf
                             <fieldset>
@@ -65,7 +66,14 @@
                                     </label>
                                 </div>
                                 <!-- Change this to a button or input when using this as a form -->
-                                <button type="submit" class="btn btn-lg btn-success btn-block">Login</button>
+                                <!-- Nút Login -->
+                                <button type="submit" class="btn btn-lg btn-success btn-block" style="margin-bottom: 5px;">Login</button>
+
+                                <!-- Nút Back -->
+                               <div class="form-link">
+                                <a href="/"  class="btn btn-lg btn-success btn-block" style="color:white">Back</a>
+                            </div>
+                             
                             </fieldset>
                         </form>
                     </div>
@@ -73,6 +81,7 @@
             </div>
         </div>
     </div>
+    
 
     <!-- jQuery -->
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>

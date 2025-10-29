@@ -23,11 +23,8 @@ class PageController extends Controller
     }
 
     public function index(){
-        //Lấy dữ liệu sản phẩm, ở mỗi trang sẽ hiện 8 sản phẩm
-      $products = Product::select('ProductID', 'ProductName', 'Image', 'PriceCoupon')
-                   ->where('ProductStatus', 1)
-                   ->paginate(8);
-        return view('user.index', ['product' => $products]);
+        $coupon=Product::GetProductsCoupon();
+        return view('user.index', ['product' => product::getNewestProducts(), 'coupon'=>Product::GetProductsCoupon()]);
     }
 
     public function productdetail(){

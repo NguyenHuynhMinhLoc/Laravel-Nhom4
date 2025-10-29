@@ -3,57 +3,37 @@
 namespace App\Http\Controllers;
 use App\Models\category;
 use App\Models\product;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-
+use App\Http\Requests\ValidateProducts;
+use App\Http\Requests\ValidateCatories;
 class AdminController extends Controller
 {
-        //Hàm để thêm danh mục mới
-    public function ThemDanhMuc(Request $request){
-        $dulieuObj = $request->all();
-         $ketqua = DB::table('category')->insert([
-            'CategoryName' => $dulieuObj['dulieu'],
-            'Status'=>1
-        ]);
-        if($ketqua){
+    //Hàm để thêm danh mục mới
+    public function CategoryADD(ValidateCatories $request){
+        $ObjData = $request->validated();
+        $result=category::CategoryADD($ObjData);
+         if ($result) {
             return response()->json([
                 'status' => true,
-                'message' => 'Thêm danh mục thành công!',
+                'message' => 'Thêm danh mục thành công!'
             ]);
-        }else{
+        } else {
             return response()->json([
-                'status'=>false,
-                'message'=>"Thêm thất bại!"
+                'status' => false,
+                'message' => 'Thêm thất bại!'
             ]);
-        }
+        } 
     }
-
-        //Hàm để load danh mục
-    public function Load_DM(){
-        return category::select('CategoryID', 'CategoryName')
-                   ->where('Status', 1)
-                   ->get();
+     //Hàm để load danh mục
+    public function CategoryLoad(){
+        return category::GetCategories();
     }
-
-        public function ThemSanPham(Request $request){
-        $dulieuObj = $request->all();        
-        $tenFile = null; 
-        $hinhAnh = $request->file('hinh');
-        if($hinhAnh){
-            $tenFile = time().'_'.$hinhAnh->getClientOriginalName();
-            $hinhAnh->move(public_path('uploads'), $tenFile);
-        }
-        $ketqua = DB::table('product')->insert([
-            'Image' => $tenFile,
-            'ProductName' => $dulieuObj['ten'] ?? '',
-            'ProductPrice' => $dulieuObj['gia'] ?? 0,
-            'PriceCoupon' => $dulieuObj['km'] ?? 0,
-            'ProductQuantity' => $dulieuObj['sl'] ?? 0,
-            'ProductStatus' => 1, 
-            'CategoryID' => $dulieuObj['dm'] ?? null
-        ]);
-
-        if($ketqua){
+    // Thêm sản phẩm vào database
+     public function ProductADD(ValidateProducts $request){
+        $ObjData = $request->validated();        
+        $Image = $request->file('Image');
+        $result = product::ProductADD($ObjData,$Image);
+         if($result){
             return response()->json([
                 'status'=>true,
                 'message'=>"Thêm sản phẩm thành công!"
@@ -61,11 +41,29 @@ class AdminController extends Controller
         } else {
             return response()->json([
                 'status'=>false,
-                'message'=>"Thêm sản phẩm thất bại"
+                'message'=>"Thêm sản phẩm thất bại",
+                'from'=>2
             ]);
         }
     }
+    //Hàm xóa sản phẩm (Không xóa khỏi database, chỉ chuyển status=0)
+    public function XoaSanPham(Request $request)
+    {
+         $dulieuObj = $request->all();
+         $ketqua=product::XoaSanPham($dulieuObj);
+         if($ketqua){
+            return response()->json([
+                'status'=>true,
+                'message'=>"Đã xóa thành công sản phẩm"
+            ]);
+         }else{
+            return response()->json([
+                'satus'=>false,
+                'message'=>"Xóa thất bại!"
+            ]);
+         }
 
+    }
     public function dashboard()
     {
         if(!session("email") || !session("password"))
@@ -82,20 +80,14 @@ class AdminController extends Controller
     public function flot(){
         return view("admin.flot");
     }
-
     public function forms(){
-        $danhmuc = Category::select('CategoryID', 'CategoryName')
-                ->where('Status', 1)
-                ->get();
-
-    $sanpham = Product::where('ProductStatus', 1)->paginate(8);
-
-    return view("admin.forms", [
-        "DanhMuc" => $danhmuc,
-        "SanPham" => $sanpham
-    ]);
+        return view("admin.forms", [
+            "Categories" => category::GetCategories(),
+            "Products" => product::GetProducts()
+        ]);
     }
-
+    
+    
     public function grid(){
         return view("admin.grid");
     }
@@ -111,7 +103,7 @@ class AdminController extends Controller
     public function login(Request $request){
         $data = $request->only("email","password");
 
-        if($data["email"] === 'adminN4@gmail.com' && $data['password'] === 'pas123')
+        if($data["email"] === 'adminN4@gmail.com' && $data['password'] === 'pas132')
         {
             $request->session()->put('admin_log_in', true);
             session(['email'=> $data['email'],'password'=> $data['password']]);
@@ -148,8 +140,8 @@ class AdminController extends Controller
     {
         // cái này sẽ xóa hết session
         $request->session()->flush();
-
         return redirect()->route('admin.login');
     }
 
 }
+

@@ -18,13 +18,25 @@
             <div class="panel-body">
                 <form role="form" method="POST" enctype="multipart/form-data" id="product-form">
                     @csrf 
+                        <div id="validation-errors"  class="alert alert-danger" style="margin-bottom: 15px; border-radius: 4px; display: none;">
+                            <strong>Vui lòng kiểm tra lại thông tin:</strong>
+                            <ul style="margin: 0; padding-left: 20px;"></ul>
+                        </div>
                     <div class="form-group">
                         <label for="product_name">Tên sản phẩm <span class="text-danger">(*)</span>:</label>
-                        <input class="form-control" id="product_name" name="product_name" placeholder="Nhập tên sản phẩm..." required>
+                        {{-- Giữ lại old() để giữ lại dữ liệu cũ khi có lỗi --}}
+                        <input class="form-control" id="product_name" name="product_name" placeholder="Nhập tên sản phẩm..." required value="{{ old('product_name') }}">
                     </div>
+                      {{-- Giữ lại @error cho từng trường nếu muốn hiển thị lỗi riêng lẻ --}}
+                      @error('product_name') 
+                        <small class="text-danger">{{ $message }}</small>
+                      @enderror
                     <div class="form-group" id="category-group">
                         <label for="category_id_select">Danh mục <span class="text-danger">(*)</span>:</label>
-                        <select class="form-control" name="category_id" id="category_id_select" required></select>
+                        {{-- Cần thêm old('category_id') cho select nếu bạn đang tự tạo option --}}
+                        <select class="form-control" name="category_id" id="category_id_select" required>
+                             {{-- Các options sẽ được load bằng JS, nhưng nếu bạn render bằng Blade thì thêm selected --}}
+                        </select>
                         <div x-show="!showQuickAdd" id="quick-add-toggle-container" style="margin-top: 10px;">
                             <button type="button" @click="showQuickAdd = true" class="btn btn-default btn-sm" style="border-radius: 4px;">
                                 <i class="fa fa-plus fa-fw"></i> Thêm Danh mục mới
@@ -34,7 +46,7 @@
                             <div class="input-group">
                                 <input type="text" id="new_category_name" class="form-control" placeholder="Nhập tên danh mục mới">
                                 <span class="input-group-btn">
-                                    <button type="button" id="save-new-category" class="btn btn-success" onclick="ThemDanhMuc();">
+                                    <button type="button" id="save-new-category" class="btn btn-success" onclick="categoryADD();">
                                         <i class="fa fa-check fa-fw"></i> Lưu
                                     </button>
                                     <button type="button" @click="showQuickAdd = false" id="cancel-new-category" class="btn btn-danger">
@@ -45,22 +57,38 @@
                             <p id="category-message" class="help-block text-info" style="margin-top: 5px; font-style: italic;">*Tên danh mục mới phải khác tên đã có.</p>
                         </div>
                     </div>
+                    @error('category_id') 
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
                     <div class="form-group">
                         <label for="quantity">Số lượng <span class="text-danger">(*)</span>:</label>
-                        <input class="form-control" id="quantity" name="quantity" placeholder="Nhập số lượng..." type="number" min="0" required value="0">
+                        <input class="form-control" id="quantity" name="quantity" placeholder="Nhập số lượng..." type="number" min="0" required value="{{ old('quantity', 0) }}">
                     </div>
+                    @error('quantity') 
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
                     <div class="form-group">
                         <label for="list_price">Giá niêm yết <span class="text-danger">(*)</span>:</label>
-                        <input class="form-control" id="list_price" name="list_price" placeholder="Nhập giá niêm yết..." type="number" min="0" required>
+                        <input class="form-control" id="list_price" name="list_price" placeholder="Nhập giá niêm yết..." type="number" min="0" required value="{{ old('list_price') }}">
                     </div>
+                    @error('list_price') 
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
                     <div class="form-group">
                         <label for="sale_price">Giá khuyến mãi (Nếu có):</label>
-                        <input class="form-control" id="sale_price" name="sale_price" placeholder="Nhập giá khuyến mãi..." type="number" min="0">
+                        <input class="form-control" id="sale_price" name="sale_price" placeholder="Nhập giá khuyến mãi..." type="number" min="0" value="{{ old('sale_price') }}">
                     </div>
+                    @error('sale_price') 
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
                     <div class="form-group">
                         <label for="product_image">Hình ảnh:</label>
                         <input type="file" id="product_image" name="product_image" accept="image/*" onchange="previewImage(event)">
                         <p class="help-block">Chọn một tệp hình ảnh cho sản phẩm.</p>
+                        {{-- Lưu ý: old() không hoạt động với type="file" vì lý do bảo mật --}}
+                        @error('product_image') 
+                            <small class="text-danger">{{ $message }}</small>
+                        @enderror
                         <div id="image-preview-area" style="margin-top: 10px;">
                             <img id="preview_image" src="" alt="Preview" style="display:none; max-width:200px; max-height: 200px; border: 1px solid #ddd; padding: 5px; border-radius: 4px;">
                             <button type="button" id="remove_image" class="btn btn-xs btn-danger" style="display:none; margin-top:5px; margin-left: 10px;" onclick="clearImage()">
@@ -69,7 +97,7 @@
                         </div>
                     </div>
                     <hr style="border-top: 1px solid #ccc;">
-                    <button type="button" onclick="ThemSanPham();" class="btn btn-success btn-lg" style="min-width: 150px; border-radius: 4px;">
+                    <button type="button" onclick="ProductADD();" class="btn btn-success btn-lg" style="min-width: 150px; border-radius: 4px;">
                         <i class="fa fa-save fa-fw"></i> Lưu
                     </button>
                     <button type="reset" class="btn btn-warning btn-lg pull-right" style="min-width: 150px; border-radius: 4px;">
@@ -97,7 +125,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($SanPham as $p)   
+                            @foreach ($Products as $p)   
                             <tr>
                                 <td>{{$p['ProductID']}}</td>
                                 <td>{{$p['ProductName']}}</td>
@@ -110,15 +138,17 @@
                                     <a href="#" class="btn btn-xs btn-primary" title="Sửa">
                                         <i class="fa fa-edit"></i> Sửa
                                     </a> 
-                                    <a href="#" class="btn btn-xs btn-danger" title="Xóa">
-                                        <i class="fa fa-trash"></i> Xóa
-                                    </a>
+
+                                    <button type="button"  class="btn btn-danger">
+                                         Xóa
+                                    </button>
+
                                 </td>
                             </tr>
                             @endforeach
                           
                             {{-- Thông báo nếu không có sản phẩm nào --}}
-                            @if($SanPham->isEmpty())
+                            @if($Products->isEmpty())
                                 <tr>
                                     <td colspan="5" class="text-center text-muted">Không có sản phẩm nào được tìm thấy.</td>
                                 </tr>
@@ -130,13 +160,13 @@
                     <div class="text-center" style="margin-top: 15px;">
                         <ul class="pagination" style="margin: 0;">
                             {{-- Previous Page Link --}}
-                            @if ($SanPham->onFirstPage())
+                            @if ($Products->onFirstPage())
                                 <li class="disabled"><span>&laquo; Previous</span></li>
                             @else
-                                <li><a href="{{ $SanPham->previousPageUrl() }}" rel="prev">&laquo; Previous</a></li>
+                                <li><a href="{{ $Products->previousPageUrl() }}" rel="prev">&laquo; Previous</a></li>
                             @endif
-                            @if ($SanPham->hasMorePages())
-                                <li><a href="{{ $SanPham->nextPageUrl() }}" rel="next">Next &raquo;</a></li>
+                            @if ($Products->hasMorePages())
+                                <li><a href="{{ $Products->nextPageUrl() }}" rel="next">Next &raquo;</a></li>
                             @else
                                 <li class="disabled"><span>Next &raquo;</span></li>
                             @endif
