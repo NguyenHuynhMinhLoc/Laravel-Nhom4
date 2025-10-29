@@ -13,7 +13,7 @@ class Product extends Model
         'Image',
         'ProductName',
         'ProductPrice',
-        'PriceCoubon',
+        'PriceCoupon',
         'ProductStatus',
         'CategoryID',
         'ImportDate'

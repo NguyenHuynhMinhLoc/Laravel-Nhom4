@@ -82,7 +82,7 @@
         </p>
     </div>
     @endforeach
-    @endif;
+    @endif
 
 
 
@@ -109,8 +109,8 @@
             <a href="{{ url('/shoppingcart') }}">Add to Cart</a>
         </p>
     </div>
-    @endforeach;
-    @endif;
+    @endforeach
+    @endif
 
 
 

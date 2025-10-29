@@ -103,7 +103,7 @@ class AdminController extends Controller
     public function login(Request $request){
         $data = $request->only("email","password");
 
-        if($data["email"] === 'adminN4@gmail.com' && $data['password'] === 'pas132')
+        if($data["email"] === 'adminN4@gmail.com' && $data['password'] === 'pas123')
         {
             $request->session()->put('admin_log_in', true);
             session(['email'=> $data['email'],'password'=> $data['password']]);
